@@ -11,8 +11,8 @@ if (!is_logged_in()) {
 
 $host = 'localhost'; 
 $dbname = 'books'; 
-$user = 'mark'; 
-$pass = 'mark';
+$user = 'taylor';
+$pass = '1655897';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
@@ -32,7 +32,7 @@ try {
 $search_results = null;
 if (isset($_GET['search']) && !empty($_GET['search'])) {
     $search_term = '%' . $_GET['search'] . '%';
-    $search_sql = 'SELECT id, author, title, publisher FROM books WHERE title LIKE :search';
+    $search_sql = 'SELECT id, title, artist, release_year FROM songs WHERE title LIKE :search';
     $search_stmt = $pdo->prepare($search_sql);
     $search_stmt->execute(['search' => $search_term]);
     $search_results = $search_stmt->fetchAll();
@@ -40,27 +40,27 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['author']) && isset($_POST['title']) && isset($_POST['publisher'])) {
+    if (isset($_POST['title']) && isset($_POST['artist']) && isset($_POST['release_year'])) {
         // Insert new entry
-        $author = htmlspecialchars($_POST['author']);
-        $title = htmlspecialchars($_POST['title']);
-        $publisher = htmlspecialchars($_POST['publisher']);
+        $author = htmlspecialchars($_POST['title']);
+        $title = htmlspecialchars($_POST['artist']);
+        $publisher = htmlspecialchars($_POST['release_year']);
         
-        $insert_sql = 'INSERT INTO books (author, title, publisher) VALUES (:author, :title, :publisher)';
+        $insert_sql = 'INSERT INTO songs (title, artist, release_year) VALUES (:title, :artist, :release_year)';
         $stmt_insert = $pdo->prepare($insert_sql);
-        $stmt_insert->execute(['author' => $author, 'title' => $title, 'publisher' => $publisher]);
+        $stmt_insert->execute(['title' => $title, 'artist' => $artist, 'release_year' => $release_year]);
     } elseif (isset($_POST['delete_id'])) {
         // Delete an entry
         $delete_id = (int) $_POST['delete_id'];
         
-        $delete_sql = 'DELETE FROM books WHERE id = :id';
+        $delete_sql = 'DELETE FROM songs WHERE id = :id';
         $stmt_delete = $pdo->prepare($delete_sql);
         $stmt_delete->execute(['id' => $delete_id]);
     }
 }
 
 // Get all books for main table
-$sql = 'SELECT id, author, title, publisher FROM books';
+$sql = 'SELECT id, title, author, release_year FROM songs';
 $stmt = $pdo->query($sql);
 ?>
 
@@ -68,18 +68,18 @@ $stmt = $pdo->query($sql);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Betty's Book Banning and Bridge Building</title>
+    <title>The Song Curator</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Hero Section -->
     <div class="hero-section">
-        <h1 class="hero-title">Betty's Book Banning and Bridge Building</h1>
-        <p class="hero-subtitle">"Because nothing brings a community together like collectively deciding what others shouldn't read!"</p>
+        <h1 class="hero-title">The Playlist Maker</h1>
+        <p class="hero-subtitle">"We let you make your own playlist! But that doesnt mean your music taste is good!"</p>
         
         <!-- Search moved to hero section -->
         <div class="hero-search">
-            <h2>Search for a Book to Ban</h2>
+            <h2>Search for your saved songs</h2>
             <form action="" method="GET" class="search-form">
                 <label for="search">Search by Title:</label>
                 <input type="text" id="search" name="search" required>
@@ -94,9 +94,9 @@ $stmt = $pdo->query($sql);
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Author</th>
                                     <th>Title</th>
-                                    <th>Publisher</th>
+                                    <th>Artist</th>
+                                    <th>Release Date</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -104,13 +104,13 @@ $stmt = $pdo->query($sql);
                                 <?php foreach ($search_results as $row): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($row['id']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['author']); ?></td>
                                     <td><?php echo htmlspecialchars($row['title']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['publisher']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['artist']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['release_year']); ?></td>
                                     <td>
                                         <form action="index5.php" method="post" style="display:inline;">
                                             <input type="hidden" name="delete_id" value="<?php echo $row['id']; ?>">
-                                            <input type="submit" value="Ban!">
+                                            <input type="submit" value="Remove">
                                         </form>
                                     </td>
                                 </tr>
@@ -118,7 +118,7 @@ $stmt = $pdo->query($sql);
                             </tbody>
                         </table>
                     <?php else: ?>
-                        <p>No books found matching your search.</p>
+                        <p>This song doesn't exist in your playlist</p>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
@@ -132,9 +132,9 @@ $stmt = $pdo->query($sql);
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Author</th>
                     <th>Title</th>
-                    <th>Publisher</th>
+                    <th>Artist</th>
+                    <th>Release Date</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -142,13 +142,13 @@ $stmt = $pdo->query($sql);
                 <?php while ($row = $stmt->fetch()): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($row['id']); ?></td>
-                    <td><?php echo htmlspecialchars($row['author']); ?></td>
                     <td><?php echo htmlspecialchars($row['title']); ?></td>
-                    <td><?php echo htmlspecialchars($row['publisher']); ?></td>
+                    <td><?php echo htmlspecialchars($row['artist']); ?></td>
+                    <td><?php echo htmlspecialchars($row['release_year']); ?></td>
                     <td>
                         <form action="index5.php" method="post" style="display:inline;">
                             <input type="hidden" name="delete_id" value="<?php echo $row['id']; ?>">
-                            <input type="submit" value="Ban!">
+                            <input type="submit" value="Remove">
                         </form>
                     </td>
                 </tr>
@@ -159,18 +159,18 @@ $stmt = $pdo->query($sql);
 
     <!-- Form section with container -->
     <div class="form-container">
-        <h2>Condemn a Book Today</h2>
+        <h2>Add Songs!</h2>
         <form action="index5.php" method="post">
-            <label for="author">Author:</label>
-            <input type="text" id="author" name="author" required>
-            <br><br>
             <label for="title">Title:</label>
             <input type="text" id="title" name="title" required>
             <br><br>
-            <label for="publisher">Publisher:</label>
-            <input type="text" id="publisher" name="publisher" required>
+            <label for="artist">Artist:</label>
+            <input type="text" id="artist" name="artist" required>
             <br><br>
-            <input type="submit" value="Condemn Book">
+            <label for="release_year">Release Date:</label>
+            <input type="text" id="release_year" name="release_year" required>
+            <br><br>
+            <input type="submit" value="Add to playlist">
         </form>
     </div>
 </body>
