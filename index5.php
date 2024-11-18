@@ -127,7 +127,7 @@ $stmt = $pdo->query($sql);
 
     <!-- Table section with container -->
     <div class="table-container">
-        <h2>All Books in Database</h2>
+        <h2>All Songs in Database</h2>
         <table class="half-width-left-align">
             <thead>
                 <tr>
