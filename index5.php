@@ -10,7 +10,7 @@ if (!is_logged_in()) {
 }
 
 $host = 'localhost'; 
-$dbname = 'books'; 
+$dbname = 'songs';
 $user = 'taylor';
 $pass = '1655897';
 $charset = 'utf8mb4';
@@ -32,7 +32,7 @@ try {
 $search_results = null;
 if (isset($_GET['search']) && !empty($_GET['search'])) {
     $search_term = '%' . $_GET['search'] . '%';
-    $search_sql = 'SELECT id, title, artist, release_year FROM songs WHERE title LIKE :search';
+    $search_sql = 'SELECT id, title, artist, release_year FROM my_songs WHERE title LIKE :search';
     $search_stmt = $pdo->prepare($search_sql);
     $search_stmt->execute(['search' => $search_term]);
     $search_results = $search_stmt->fetchAll();
@@ -42,25 +42,25 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['title']) && isset($_POST['artist']) && isset($_POST['release_year'])) {
         // Insert new entry
-        $author = htmlspecialchars($_POST['title']);
-        $title = htmlspecialchars($_POST['artist']);
-        $publisher = htmlspecialchars($_POST['release_year']);
+        $title = htmlspecialchars($_POST['title']);
+        $artist = htmlspecialchars($_POST['artist']);
+        $release_year = htmlspecialchars($_POST['release_year']);
         
-        $insert_sql = 'INSERT INTO songs (title, artist, release_year) VALUES (:title, :artist, :release_year)';
+        $insert_sql = 'INSERT INTO my_songs (title, artist, release_year) VALUES (:title, :artist, :release_year)';
         $stmt_insert = $pdo->prepare($insert_sql);
         $stmt_insert->execute(['title' => $title, 'artist' => $artist, 'release_year' => $release_year]);
     } elseif (isset($_POST['delete_id'])) {
         // Delete an entry
         $delete_id = (int) $_POST['delete_id'];
         
-        $delete_sql = 'DELETE FROM songs WHERE id = :id';
+        $delete_sql = 'DELETE FROM my_songs WHERE id = :id';
         $stmt_delete = $pdo->prepare($delete_sql);
         $stmt_delete->execute(['id' => $delete_id]);
     }
 }
 
 // Get all books for main table
-$sql = 'SELECT id, title, author, release_year FROM songs';
+$sql = 'SELECT id, title, artist, release_year FROM my_songs';
 $stmt = $pdo->query($sql);
 ?>
 
